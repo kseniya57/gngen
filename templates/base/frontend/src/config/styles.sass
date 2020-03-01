@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,400&display=swap')
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons+Round')
+
+$text-color--base: #606266
+
+html
+  font-size: 16px
+  box-sizing: border-box
+
+*, *::before, *::after
+  box-sizing: inherit
+  font-family: inherit
+  outline: none
+
+*:not(input)
+  -webkit-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+  user-select: none
+
+body
+  margin: 0
+  padding: 0
+  overflow-x: hidden
+  width: 100%
+  height: 100vh
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  font-size: 1.6rem
+  line-height: 1.5
+  font-weight: 400
+  text-align: left
+  color: $text-color--base
+
+::-webkit-scrollbar
+  display: none
+
+p, h1, h2, h3, h4, h5, h6, ul, blockquote
+  padding: 0
+  margin: 0
+  color: $text-color--base
+
+ul
+  list-style-type: none
+
+img
+  width: 100%
+  height: auto
+  max-height: 100%
+
+a
+  cursor: pointer
+  &, &:link
+    color: $text-color--base
+    &:not(.underline)
+      text-decoration: none
