@@ -2,9 +2,13 @@ import _ from 'lodash';
 import chalk from 'chalk';
 import pluralize from 'pluralize';
 import {FileManager} from '../../managers';
-import {fs, safeAwait, getConfig, cp} from '../../utils';
+import {fs, safeAwait, getConfig, cp, dirname} from '../../utils';
 import {
-    idField,
+    idConfig,
+    emailConfig,
+    passwordConfig,
+    rightConfig,
+    userConfig,
     ENTITY_TEMPLATE,
     RESOLVER_TEMPLATE,
     QUERIES_TEMPLATE,
@@ -12,7 +16,7 @@ import {
     PAGE_TEMPLATE,
     SIDEBAR_ITEM_TEMPLATE,
     SET_RELATIONS_TEMPLATE,
-    FRONTEND_TYPES_MAPPING
+    FRONTEND_TYPES_MAPPING,
 } from './constants';
 import {
     createField,
@@ -23,7 +27,7 @@ import {
     makeRelationSetter
 } from './helpers';
 
-const generateBackendFiles = async ({ entities = [], enums = {}, db: dbConfig, name: appName }) => {
+const generateBackendFiles = async ({ entities = [], enums = {}, db: dbConfig, name: appName, auth: withAuth }) => {
 
     await FileManager.updateFile('./backend/package.json', text => text
         .replace('$APP_NAME', appName)
@@ -32,7 +36,7 @@ const generateBackendFiles = async ({ entities = [], enums = {}, db: dbConfig, n
     const sourceDirectory = FileManager.makePath('./backend/src');
 
     await safeAwait(fs.mkdir(`${sourceDirectory}/entities`));
-    await safeAwait(fs.mkdir(`${sourceDirectory}/resolvers`));
+    await safeAwait(fs.mkdir(`${sourceDirectory}/resolvers`), false);
 
     const enumsArray = _.entries(enums);
 
@@ -58,12 +62,31 @@ const generateBackendFiles = async ({ entities = [], enums = {}, db: dbConfig, n
     );
     await fs.writeFile(
         `${sourceDirectory}/resolvers/index.ts`,
-        `${entities.map(entity => `import {${entity.capitalizedName}Resolver} from './${entity.name}.resolver';`).join('\n')}\n\nexport default [\n\t${entities.map(entity => `${entity.capitalizedName}Resolver`).join(',\n\t')}\n];`
+        `${withAuth ? 'import {AuthResolver} from \'./auth.resolver\';\n' : ''}${entities.map(entity => `import {${entity.capitalizedName}Resolver} from './${entity.name}.resolver';`).join('\n')}\n\nexport default [${withAuth ? '\n\tAuthResolver,' : ''}\n\t${entities.map(entity => `${entity.capitalizedName}Resolver`).join(',\n\t')}\n];`
     );
 
-    await FileManager.updateFile('./backend/src/index.ts', text => text
-        .replace('/* db */', _.entries(dbConfig).map(([key, value]) => `${key}: ${_.isString(value) ? `'${value}'` : value}`).join(',\n\t') + ',')
-    );
+    await FileManager.updateFile('./backend/src/index.ts', text => {
+            let updatedText = text
+                .replace('/* db */', _.entries(dbConfig).map(([key, value]) => `${key}: ${_.isString(value) ? `'${value}'` : value}`).join(',\n\t\t') + ',');
+
+            if (withAuth) {
+                updatedText = updatedText
+                    .replace(/('\.\/controllers';\n)/, `$1import createContext from './utils/createContext';\nimport { authChecker } from './guards/auth.guard';\n`)
+                    .replace(/(resolvers,)/, `$1\n\t\tauthChecker,`)
+                    .replace(/(schema,)/, `$1\n\t\tcontext: createContext,`)
+            }
+
+            return updatedText;
+    });
+
+    if (withAuth) {
+        await FileManager.updateFile('./backend/src/middlewares/index.ts', text => text
+            .replace(/('\.\/session';\n)/, `$1import auth from './auth';\n`)
+            .replace(/(]\.forEach)/, `auth$1`)
+        );
+
+        await FileManager.updateFile('./backend/src/types/index.ts', text => `${text}\nexport * from './auth';`)
+    }
 
     await safeAwait(Promise.all(entities.map(async (entity) => {
         const {
@@ -75,7 +98,7 @@ const generateBackendFiles = async ({ entities = [], enums = {}, db: dbConfig, n
 
         const makeRelationSetterForEntity = makeRelationSetter(name);
 
-        const resolverCode = applyNameReplacers(RESOLVER_TEMPLATE)
+        let resolverCode = applyNameReplacers(RESOLVER_TEMPLATE)
             .replace('/* import relations */', `import { ${relations.map(relation => _.upperFirst(relation.entity)).join(', ')} } from '../entities';`)
             .replace(
                 '/* relations repositories */',
@@ -83,6 +106,10 @@ const generateBackendFiles = async ({ entities = [], enums = {}, db: dbConfig, n
             )
             .replace('/* set relations */', applyNameReplacers(SET_RELATIONS_TEMPLATE).replace('$BODY', relations.map(makeRelationSetterForEntity).join('\n\t\t')))
             .replace(/\/\* set relations call \*\//g, `await this.setRelations(${name}, input);`);
+
+        if (!withAuth) {
+            resolverCode = resolverCode.replace(/(\t\tAuthorized,|@Authorized\(.*?\))\n/g, '');
+        }
 
         try {
             await fs.writeFile(`${sourceDirectory}/resolvers/${name}.resolver.ts`, resolverCode, { flag: 'wx' });
@@ -95,7 +122,7 @@ const generateBackendFiles = async ({ entities = [], enums = {}, db: dbConfig, n
             .map(field => createGQLField(field, false))
             .join('\n\t\n\t');
 
-        fields.unshift(idField);
+        fields.unshift(idConfig);
 
         let objectTypeFields = fields
             .map(createGQLField)
@@ -140,7 +167,7 @@ const generateBackendFiles = async ({ entities = [], enums = {}, db: dbConfig, n
             console.log(chalk.red(`${name} model already exists 💣`));
         }
     })));
-};
+}
 
 const generateFrontendFiles = async ({ entities, enums, name: appName }) => {
 
@@ -234,6 +261,23 @@ export default async () => {
     config.entities.forEach(applyEntityNameReplacers);
 
     await generateFrontendFiles(config);
+
+    if (config.auth) {
+        await FileManager.copyDir(`${dirname}/templates/auth`, 'backend/src');
+        config.entities.push(rightConfig);
+        let user = _.find(config.entities, ['name', 'user']);
+        if (!user) {
+            user = { ...userConfig };
+            config.entities.push(user);
+        } else {
+            if (!_.find(user.fields, ['name', 'email'])) {
+                user.fields.push(emailConfig);
+            }
+            if (!_.find(user.fields, ['name', 'password'])) {
+                user.fields.push(passwordConfig);
+            }
+        }
+    }
 
     fillMissingRelations(config.entities);
 

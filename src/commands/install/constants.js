@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { dirname } from '../../utils';
+import {applyEntityNameReplacers} from "./helpers";
 
 export const RESOLVER_TEMPLATE = fs.readFileSync(`${dirname}/templates/resolver.template.ts`, 'utf8');
 export const ENTITY_TEMPLATE = fs.readFileSync(`${dirname}/templates/entity.template.ts`, 'utf8');
@@ -7,13 +8,6 @@ export const ENTITY_TEMPLATE = fs.readFileSync(`${dirname}/templates/entity.temp
 export const SET_RELATIONS_TEMPLATE = `async setRelations($NAME: $NAME_CAPITALIZED, input: $NAME_CAPITALIZEDInput) {
         $BODY
     }`;
-
-export const idField = {
-    "name": "id",
-    "type": "int",
-    "required": true,
-    "generated": true
-};
 
 export const TYPES_MAPPING = {
     int: 'number',
@@ -66,3 +60,52 @@ export const DICTIONARIES_QUERY_TEMPLATE = `export const GET_DICTIONARIES_QUERY 
         $DICTIONARIES
     }
 \`;`;
+
+export const idConfig = {
+    name: 'id',
+    type: 'int',
+    required: true,
+    generated: true
+};
+
+export const rightConfig = {
+    name: 'right',
+    fields: [
+        {
+            'name': 'name',
+            'type': 'string'
+        },
+    ],
+    relations: [
+        {
+            type: 'manyToMany',
+            entity: 'user'
+        }
+    ]
+};
+
+applyEntityNameReplacers(rightConfig);
+
+export const emailConfig = {
+    name: 'email',
+    type: 'string',
+    length: 64,
+    required: true
+};
+
+export const passwordConfig = {
+    name: 'password',
+    type: 'string',
+    hidden: true,
+    length: 128
+};
+
+export const userConfig ={
+    name: 'user',
+    fields: [
+        emailConfig,
+        passwordConfig
+    ]
+};
+
+applyEntityNameReplacers(userConfig);

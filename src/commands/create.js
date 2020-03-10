@@ -13,11 +13,11 @@ export default async (name) => {
       const action = await chooseAction(name);
 
       switch (action) {
-        case 'merge':
+        case 'overwrite':
           await fs.rmdir(name);
           await fs.mkdir(name);
           break;
-        case 'overwrite':
+        case 'merge':
           /* continue, merge will be done by default */
           break;
         default:

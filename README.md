@@ -19,5 +19,9 @@ gngen install
 ## Пример генерируемого приложения (examples/task-manager)
 ![](images/ready_project.gif)
 
+## Авторизация
+
+- Укажите в настройках `auth: true`
+
 
 

@@ -1,6 +1,9 @@
 import {verify} from 'jsonwebtoken';
-import { JWT_SECRET } from '../constants';
 import {Context} from 'koa';
+import {getRepository} from 'typeorm';
+import { map } from 'lodash';
+import { JWT_SECRET } from '../constants';
+import { User } from '../entities';
 
 export default async (ctx: Context | {[index: string]: any}, next: Function) => {
     const {userId} = ctx.session;
@@ -14,10 +17,21 @@ export default async (ctx: Context | {[index: string]: any}, next: Function) => 
     }
 
     if (ctx.session.userId && !ctx.session.rights) {
-        ctx.session.rights = await getUserRights(ctx.session.userId, 'name').then(pickAll<string>('name'));
-        ctx.session.ALL_INCLUSIVE = ctx.session.rights.includes('*');
+
+        const user = await getRepository(User).findOne({
+            where: { id: ctx.session.userId },
+            relations: ['rights']
+        });
+
+        if (user) {
+            ctx.session.rights = map(
+                user.rights,
+                'name'
+            );
+            ctx.session.ALL_INCLUSIVE = ctx.session.rights.includes('*');
+        }
+
     }
-    ctx.session.ALL_INCLUSIVE = true;
 
     await next()
 }
