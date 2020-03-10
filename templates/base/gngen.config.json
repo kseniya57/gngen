@@ -75,5 +75,5 @@
     "port": 3306,
     "host": "localhost"
   },
-  "auth": true
+  "auth": false
 }
