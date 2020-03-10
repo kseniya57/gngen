@@ -10,12 +10,12 @@ const enums = {
     /* enums */
 };
 
-export default function $NAME_CAPITALIZED() {
+export default function $NAME_PLURALIZED_AND_CAPITALIZED() {
     return (
         <div>
             <Table
                 headers={headers}
-                entityName="$NAME_PLURALIZED_AND_CAPITALIZSED"
+                entityName="$NAME_PLURALIZED"
                 queries={queries}
                 enums={enums}
             />

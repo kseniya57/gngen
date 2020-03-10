@@ -4,9 +4,9 @@ import * as queries from 'graphql/users';
 
 const headers = [
     { key: 'id', name: '#', editable: false },
-	{ key: 'name', name: 'name', type: 'string', required: undefined, editable: true },
+	{ key: 'name', name: 'name', type: 'string', required: false, editable: true },
 	{ key: 'email', name: 'email', type: 'string', required: true, editable: true },
-	{ key: 'avatar', name: 'avatar', type: 'string', required: undefined, editable: true, format: 'image' },
+	{ key: 'avatar', name: 'avatar', type: 'string', required: false, editable: true, format: 'image' },
 	{ key: 'tasks', name: 'tasks', type: 'multiRelation' }
 ];
 
@@ -14,12 +14,12 @@ const enums = {
     
 };
 
-export default function User() {
+export default function Users() {
     return (
         <div>
             <Table
                 headers={headers}
-                entityName="Users"
+                entityName="users"
                 queries={queries}
                 enums={enums}
             />

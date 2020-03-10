@@ -12,6 +12,12 @@ export const GET_ALL_QUERY = gql`
     }
 `;
 
+export const GET_COUNT_QUERY = gql`
+    query $NAME_PLURALIZEDCount {
+        $NAME_PLURALIZEDCount
+    }
+`;
+
 /* dictionaries */
 
 export const GET_ONE_QUERY = gql`

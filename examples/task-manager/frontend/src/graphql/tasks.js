@@ -19,6 +19,12 @@ export const GET_ALL_QUERY = gql`
     }
 `;
 
+export const GET_COUNT_QUERY = gql`
+    query tasksCount {
+        tasksCount
+    }
+`;
+
 export const GET_DICTIONARIES_QUERY = gql`
     query tasksDictionaries {
         categories {

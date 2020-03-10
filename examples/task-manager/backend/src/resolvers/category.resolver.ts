@@ -1,6 +1,5 @@
 import {
     Arg,
-    Authorized,
     Int,
     Mutation,
     Publisher,
@@ -31,11 +30,16 @@ export class CategoryResolver {
         @InjectRepository(Task) private readonly taskRepository: Repository<Task>
     ) {}
 
-    @Query(returns => [Category], { description: 'Get all categories' })
+    @Query(returns => [Category], { description: 'Get categories' })
     async categories(
         @Arg('pagination', type => Pagination, { nullable: true }) pagination?: Pagination,
     ): Promise<Category[]> {
         return this.categoryRepository.find(pagination)
+    }
+
+    @Query(returns => Int, { description: 'Get categories count' })
+    async categoriesCount(): Promise<number> {
+        return this.categoryRepository.count()
     }
 
     async setRelations(category: Category, input: CategoryInput) {

@@ -4,7 +4,7 @@ import * as queries from 'graphql/categories';
 
 const headers = [
     { key: 'id', name: '#', editable: false },
-	{ key: 'name', name: 'name', type: 'string', required: undefined, editable: true }
+	{ key: 'name', name: 'name', type: 'string', required: false, editable: true }
 ];
 
 const enums = {
@@ -16,7 +16,7 @@ export default function Category() {
         <div>
             <Table
                 headers={headers}
-                entityName="Categories"
+                entityName="categories"
                 queries={queries}
                 enums={enums}
             />

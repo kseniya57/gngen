@@ -1,6 +1,5 @@
 import {
     Arg,
-    Authorized,
     Int,
     Mutation,
     Publisher,
@@ -32,11 +31,16 @@ export class TaskResolver {
 		@InjectRepository(User) private readonly userRepository: Repository<User>
     ) {}
 
-    @Query(returns => [Task], { description: 'Get all tasks' })
+    @Query(returns => [Task], { description: 'Get tasks' })
     async tasks(
         @Arg('pagination', type => Pagination, { nullable: true }) pagination?: Pagination,
     ): Promise<Task[]> {
         return this.taskRepository.find(pagination)
+    }
+
+    @Query(returns => Int, { description: 'Get tasks count' })
+    async tasksCount(): Promise<number> {
+        return this.taskRepository.count()
     }
 
     async setRelations(task: Task, input: TaskInput) {

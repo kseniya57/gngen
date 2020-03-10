@@ -1,6 +1,5 @@
 import {
     Arg,
-    Authorized,
     Int,
     Mutation,
     Publisher,
@@ -31,11 +30,16 @@ export class $NAME_CAPITALIZEDResolver {
         /* relations repositories */
     ) {}
 
-    @Query(returns => [$NAME_CAPITALIZED], { description: 'Get all $NAME_PLURALIZED' })
+    @Query(returns => [$NAME_CAPITALIZED], { description: 'Get $NAME_PLURALIZED' })
     async $NAME_PLURALIZED(
         @Arg('pagination', type => Pagination, { nullable: true }) pagination?: Pagination,
     ): Promise<$NAME_CAPITALIZED[]> {
         return this.$NAMERepository.find(pagination)
+    }
+
+    @Query(returns => Int, { description: 'Get $NAME_PLURALIZED count' })
+    async $NAME_PLURALIZEDCount(): Promise<number> {
+        return this.$NAMERepository.count()
     }
 
     /* set relations */

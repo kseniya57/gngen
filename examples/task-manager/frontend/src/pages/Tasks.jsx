@@ -4,9 +4,9 @@ import * as queries from 'graphql/tasks';
 
 const headers = [
     { key: 'id', name: '#', editable: false },
-	{ key: 'name', name: 'name', type: 'string', required: undefined, editable: true },
-	{ key: 'content', name: 'content', type: 'text', required: undefined, editable: true },
-	{ key: 'done', name: 'done', type: 'boolean', required: undefined, editable: true },
+	{ key: 'name', name: 'name', type: 'string', required: false, editable: true },
+	{ key: 'content', name: 'content', type: 'text', required: false, editable: true },
+	{ key: 'done', name: 'done', type: 'boolean', required: false, editable: true },
 	{ key: 'categories', name: 'categories', type: 'multiRelation' }
 ];
 
@@ -19,7 +19,7 @@ export default function Task() {
         <div>
             <Table
                 headers={headers}
-                entityName="Tasks"
+                entityName="tasks"
                 queries={queries}
                 enums={enums}
             />

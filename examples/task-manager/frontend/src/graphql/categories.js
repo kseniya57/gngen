@@ -14,6 +14,12 @@ export const GET_ALL_QUERY = gql`
     }
 `;
 
+export const GET_COUNT_QUERY = gql`
+    query categoriesCount {
+        categoriesCount
+    }
+`;
+
 
 
 export const GET_ONE_QUERY = gql`
