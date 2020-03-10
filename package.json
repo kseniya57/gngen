@@ -1,25 +1,24 @@
 {
-  "name": "nodegen",
-  "version": "0.0.1",
+  "name": "gngen",
+  "version": "0.1.0",
   "description": "WEB-projects generator",
   "main": "src/index.js",
   "type": "module",
   "preferGlobal": true,
+  "repository": "https://github.com/kseniya57/gngen",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./src/ --ext .js --fix",
     "start": "node --experimental-modules --es-module-specifier-resolution=node src/index.js"
   },
   "author": "Kseniya <kaprisa57@gmail.com>",
-  "license": "ISC",
   "bin": {
-    "nodegen": "./bin/nodegen"
+    "gngen": "./bin/gngen"
   },
   "dependencies": {
     "chalk": "^2.4.1",
     "inquirer": "^6.0.0",
     "lodash": "^4.17.15",
-    "mysql": "^2.16.0",
     "pluralize": "^8.0.0"
   },
   "devDependencies": {

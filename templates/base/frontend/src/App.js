@@ -1,6 +1,6 @@
 import React from 'react';
 import { Router, browserHistory, Route } from 'react-router';
-import { Layout } from 'nodegen-ui';
+import { Layout } from 'gngen-ui';
 import { sidebar, theme, apolloClient } from 'config';
 /* pages */
 

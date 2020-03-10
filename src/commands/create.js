@@ -1,9 +1,7 @@
 import chalk from 'chalk';
-import { cp, dirname, fs } from '../utils';
+import { dirname, fs } from '../utils';
 import { chooseAction, isOk } from '../utils/prompt';
 import { FileManager } from '../managers';
-
-const currentDirectory = process.cwd();
 
 export default async (name) => {
   /* directory for project */
@@ -37,13 +35,4 @@ export default async (name) => {
 
   /* common project files */
   await FileManager.copyDir(`${dirname}/templates/base`, name);
-
-  // console.log(chalk.cyan('Installing dependencies...🛠'));
-  //
-  // await Promise.all([
-  //   cp.exec(`cd ${currentDirectory}/${name}/backend && npm install`),
-  //   cp.exec(`cd ${currentDirectory}/${name}/frontend && npm install`)
-  // ]);
-  //
-  // console.log(chalk.green('Done!🎊🎁😺 Enjoy with your new project!🎈'));
 };

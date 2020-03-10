@@ -208,15 +208,15 @@ const generateFrontendFiles = async ({ entities, enums, name: appName }) => {
         const pageCode = applyNameReplacers(PAGE_TEMPLATE)
             .replace(
                 '/* headers */',
-                    `{ key: 'id', name: '#', editable: false },\n\t\t\t\t\t`
+                    `{ key: 'id', name: '#', editable: false },\n\t`
                     + fields.filter(field => !field.hidden)
                         .map(field => `{ key: '${field.name}', name: '${field.name}', type: '${FRONTEND_TYPES_MAPPING[field.type] || field.type}', required: ${field.required && !field.generated}, editable: ${!field.hidden && !field.generated}${field.format ? `, format: '${field.format}'` : ''} }`)
-                        .join(',\n\t\t\t\t\t')
-                    + (relations.length ? ',\n\t\t\t\t\t' : '')
+                        .join(',\n\t')
+                    + (relations.length ? ',\n\t' : '')
                     + relations.map(relation => {
                         const key = relation.type.endsWith('One') ? relation.entity : pluralize(relation.entity);
                         return `{ key: '${key}', name: '${key}', type: '${enums[relation.type] ? 'enum' : FRONTEND_TYPES_MAPPING[relation.type]}' }`
-                      }).join(',\n\t\t\t\t\t')
+                      }).join(',\n\t')
             )
             .replace(
                 '/* enums */',
@@ -230,9 +230,7 @@ export default async () => {
 
     const config  = await getConfig();
 
-    config.entities.forEach(entity => {
-        entity.applyNameReplacers = applyEntityNameReplacers(entity);
-    });
+    config.entities.forEach(applyEntityNameReplacers);
 
     await generateFrontendFiles(config);
 

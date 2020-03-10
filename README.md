@@ -1,18 +1,23 @@
-# WEB-projects generator
+# Генератор веб-ориентированных CRUD-приложений
 
-## Installation
+## Установка
 
 ```bash
-npm i -g nodegen
+npm i -g gngen
 ```
 
-## Create new project
+## Создание приложения
 ```bash
-nodegen create <name>
+gngen create <name>
 cd <name>
-# update nodegen.config.json
-nodegen install
+# update gngen.config.json
+gngen install
 ```
+
+![](images/create_app.gif)
+
+## Пример генерируемого приложения (examples/task-manager)
+![](images/ready_project.gif)
 
 
 

@@ -114,7 +114,8 @@ export const applyEntityNameReplacers = entity => {
     entity.pluralizedName = pluralize(entity.name);
     entity.pluralizedAndUpperCasedName = _.upperCase(entity.pluralizedName);
     entity.pluralizedAndCapitalizedName = _.upperFirst(entity.pluralizedName);
-    return template => template
+    entity.applyNameReplacers =  template => template
+        .replace(/\$NAME_PLURALIZED_AND_CAPITALIZSED/g, entity.pluralizedAndCapitalizedName)
         .replace(/\$NAME_PLURALIZED_AND_UPPERCASED/g, entity.pluralizedAndUpperCasedName)
         .replace(/\$NAME_UPPERCASED/g, entity.upperCasedName)
         .replace(/\$NAME_CAPITALIZED/g, entity.capitalizedName)
