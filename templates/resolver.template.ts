@@ -14,6 +14,7 @@ import {Repository} from 'typeorm';
 import {InjectRepository} from 'typeorm-typedi-extensions';
 import { filterFields } from '../utils/helpers';
 import {$NAME_CAPITALIZED, $NAME_CAPITALIZEDInput} from '../entities/$NAME';
+import {Pagination} from "../types";
 /* import relations */
 
 enum Topic {
@@ -30,15 +31,15 @@ export class $NAME_CAPITALIZEDResolver {
         /* relations repositories */
     ) {}
 
-    @Authorized('READ_$NAME_UPPERCASED')
     @Query(returns => [$NAME_CAPITALIZED], { description: 'Get all $NAME_PLURALIZED' })
-    async $NAME_PLURALIZED(): Promise<$NAME_CAPITALIZED[]> {
-        return this.$NAMERepository.find()
+    async $NAME_PLURALIZED(
+        @Arg('pagination', type => Pagination, { nullable: true }) pagination?: Pagination,
+    ): Promise<$NAME_CAPITALIZED[]> {
+        return this.$NAMERepository.find(pagination)
     }
 
     /* set relations */
 
-    @Authorized('ADD_$NAME_UPPERCASED')
     @Mutation(returns => Int, { description: 'Add a $NAME' })
     async add$NAME_CAPITALIZED(
         @Arg('input', type => $NAME_CAPITALIZEDInput) input: $NAME_CAPITALIZEDInput,
@@ -60,8 +61,6 @@ export class $NAME_CAPITALIZEDResolver {
         return $NAME;
     }
 
-
-    @Authorized('EDIT_$NAME_UPPERCASED')
     @Mutation(returns => Boolean, { description: 'Edit $NAME' })
     async update$NAME_CAPITALIZED(
         @Arg('id', type => Int) id: number,
@@ -88,7 +87,6 @@ export class $NAME_CAPITALIZEDResolver {
         return $NAME;
     }
 
-    @Authorized('DELETE_$NAME_UPPERCASED')
     @Mutation(returns => Boolean, { description: 'Delete $NAME' })
     async delete$NAME_CAPITALIZED(
         @Arg('id', type => Int) id: number,

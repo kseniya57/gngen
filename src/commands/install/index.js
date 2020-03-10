@@ -32,6 +32,7 @@ const generateBackendFiles = async ({ entities = [], enums = {}, db: dbConfig, n
     const sourceDirectory = FileManager.makePath('./backend/src');
 
     await safeAwait(fs.mkdir(`${sourceDirectory}/entities`));
+    await safeAwait(fs.mkdir(`${sourceDirectory}/resolvers`));
 
     const enumsArray = _.entries(enums);
 
@@ -57,7 +58,7 @@ const generateBackendFiles = async ({ entities = [], enums = {}, db: dbConfig, n
     );
     await fs.writeFile(
         `${sourceDirectory}/resolvers/index.ts`,
-        `import {AuthResolver} from './auth.resolver';\n${entities.map(entity => `import {${entity.capitalizedName}Resolver} from './${entity.name}.resolver';`).join('\n')}\n\nexport default [\n\tAuthResolver,\n\t${entities.map(entity => `${entity.capitalizedName}Resolver`).join(',\n\t')}\n];`
+        `${entities.map(entity => `import {${entity.capitalizedName}Resolver} from './${entity.name}.resolver';`).join('\n')}\n\nexport default [\n\t${entities.map(entity => `${entity.capitalizedName}Resolver`).join(',\n\t')}\n];`
     );
 
     await FileManager.updateFile('./backend/src/index.ts', text => text

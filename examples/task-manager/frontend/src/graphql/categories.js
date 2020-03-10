@@ -7,8 +7,8 @@ const CATEGORY_FIELDS = `
 `;
 
 export const GET_ALL_QUERY = gql`
-    query categories {
-        categories {
+    query categories($pagination: Pagination) {
+        categories(pagination: $pagination) {
             ${CATEGORY_FIELDS}
         }
     }

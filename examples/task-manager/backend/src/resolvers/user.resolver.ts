@@ -14,6 +14,7 @@ import {Repository} from 'typeorm';
 import {InjectRepository} from 'typeorm-typedi-extensions';
 import { filterFields } from '../utils/helpers';
 import {User, UserInput} from '../entities/user';
+import {Pagination} from "../types";
 import { Task } from '../entities';
 
 enum Topic {
@@ -30,10 +31,11 @@ export class UserResolver {
         @InjectRepository(Task) private readonly taskRepository: Repository<Task>
     ) {}
 
-    @Authorized('READ_USER')
     @Query(returns => [User], { description: 'Get all users' })
-    async users(): Promise<User[]> {
-        return this.userRepository.find()
+    async users(
+        @Arg('pagination', type => Pagination, { nullable: true }) pagination?: Pagination,
+    ): Promise<User[]> {
+        return this.userRepository.find(pagination)
     }
 
     async setRelations(user: User, input: UserInput) {
@@ -42,7 +44,6 @@ export class UserResolver {
         }
     }
 
-    @Authorized('ADD_USER')
     @Mutation(returns => Int, { description: 'Add a user' })
     async addUser(
         @Arg('input', type => UserInput) input: UserInput,
@@ -64,8 +65,6 @@ export class UserResolver {
         return user;
     }
 
-
-    @Authorized('EDIT_USER')
     @Mutation(returns => Boolean, { description: 'Edit user' })
     async updateUser(
         @Arg('id', type => Int) id: number,
@@ -92,7 +91,6 @@ export class UserResolver {
         return user;
     }
 
-    @Authorized('DELETE_USER')
     @Mutation(returns => Boolean, { description: 'Delete user' })
     async deleteUser(
         @Arg('id', type => Int) id: number,

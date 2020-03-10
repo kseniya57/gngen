@@ -13,9 +13,7 @@ import { buildSchema } from 'type-graphql';
 import {GRAPHQL_PATH} from './constants';
 import applyMiddleware from './middlewares';
 import appRoutes from './controllers';
-import createContext from './utils/createContext';
 
-import { authChecker } from './guards/auth.guard';
 import resolvers from './resolvers';
 import entities from './entities';
 
@@ -69,7 +67,6 @@ async function bootstrap() {
 
     const schema = await buildSchema({
         resolvers,
-        authChecker,
         validate: false,
         pubSub,
         container: Container,
@@ -77,7 +74,6 @@ async function bootstrap() {
 
     const apolloServer = new ApolloServer({
         schema,
-        context: createContext
     });
 
     apolloServer.applyMiddleware({ app, path: GRAPHQL_PATH });

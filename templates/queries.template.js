@@ -5,8 +5,8 @@ const $NAME_UPPERCASED_FIELDS = `
 `;
 
 export const GET_ALL_QUERY = gql`
-    query $NAME_PLURALIZED {
-        $NAME_PLURALIZED {
+    query $NAME_PLURALIZED($pagination: Pagination) {
+        $NAME_PLURALIZED(pagination: $pagination) {
             ${$NAME_UPPERCASED_FIELDS}
         }
     }

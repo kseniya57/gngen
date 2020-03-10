@@ -14,6 +14,11 @@
           "required": true
         },
         {
+          "name": "password",
+          "type": "string",
+          "hidden": true
+        },
+        {
           "name": "avatar",
           "type": "string",
           "length": 128,
@@ -73,5 +78,6 @@
     "password": "12345678",
     "port": 3306,
     "host": "localhost"
-  }
+  },
+  "auth": false
 }

@@ -1,4 +1,3 @@
-import auth from '../middlewares/auth'
 import { Context } from 'koa';
 
 export default async ({ ctx = {}, connection }: { ctx: Context | {[index: string]: any}, connection: Context }) => {

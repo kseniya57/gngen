@@ -12,8 +12,8 @@ const USER_FIELDS = `
 `;
 
 export const GET_ALL_QUERY = gql`
-    query users {
-        users {
+    query users($pagination: Pagination) {
+        users(pagination: $pagination) {
             ${USER_FIELDS}
         }
     }

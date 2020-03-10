@@ -14,6 +14,7 @@ import {Repository} from 'typeorm';
 import {InjectRepository} from 'typeorm-typedi-extensions';
 import { filterFields } from '../utils/helpers';
 import {Category, CategoryInput} from '../entities/category';
+import {Pagination} from "../types";
 import { Task } from '../entities';
 
 enum Topic {
@@ -30,10 +31,11 @@ export class CategoryResolver {
         @InjectRepository(Task) private readonly taskRepository: Repository<Task>
     ) {}
 
-    @Authorized('READ_CATEGORY')
     @Query(returns => [Category], { description: 'Get all categories' })
-    async categories(): Promise<Category[]> {
-        return this.categoryRepository.find()
+    async categories(
+        @Arg('pagination', type => Pagination, { nullable: true }) pagination?: Pagination,
+    ): Promise<Category[]> {
+        return this.categoryRepository.find(pagination)
     }
 
     async setRelations(category: Category, input: CategoryInput) {
@@ -42,7 +44,6 @@ export class CategoryResolver {
         }
     }
 
-    @Authorized('ADD_CATEGORY')
     @Mutation(returns => Int, { description: 'Add a category' })
     async addCategory(
         @Arg('input', type => CategoryInput) input: CategoryInput,
@@ -64,8 +65,6 @@ export class CategoryResolver {
         return category;
     }
 
-
-    @Authorized('EDIT_CATEGORY')
     @Mutation(returns => Boolean, { description: 'Edit category' })
     async updateCategory(
         @Arg('id', type => Int) id: number,
@@ -92,7 +91,6 @@ export class CategoryResolver {
         return category;
     }
 
-    @Authorized('DELETE_CATEGORY')
     @Mutation(returns => Boolean, { description: 'Delete category' })
     async deleteCategory(
         @Arg('id', type => Int) id: number,

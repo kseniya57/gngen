@@ -1,7 +1,7 @@
 {
   "name": "gngen",
-  "version": "0.1.0",
-  "description": "WEB-projects generator",
+  "version": "0.0.1",
+  "description": "projects generator",
   "main": "src/index.js",
   "type": "module",
   "preferGlobal": true,

@@ -12,8 +12,8 @@ const TASK_FIELDS = `
 `;
 
 export const GET_ALL_QUERY = gql`
-    query tasks {
-        tasks {
+    query tasks($pagination: Pagination) {
+        tasks(pagination: $pagination) {
             ${TASK_FIELDS}
         }
     }
