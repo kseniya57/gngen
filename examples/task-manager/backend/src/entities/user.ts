@@ -20,12 +20,8 @@ export class User {
 	name: string;
 	
 	@Field(type => String, { nullable: true })
-	@Column({ nullable: false, type: "varchar", length: 32 })
+	@Column({ nullable: false, type: "varchar", length: 64 })
 	email: string;
-	
-	@Field(type => String, { nullable: true })
-	@Column({ nullable: true, type: "varchar", length: 32 })
-	password: string;
 	
 	@Field(type => String, { nullable: true })
 	@Column({ nullable: true, type: "varchar", length: 128 })
@@ -44,9 +40,6 @@ export class UserInput implements Partial<User> {
 	
 	@Field(type => String, { nullable: false })
 	email: string;
-	
-	@Field(type => String, { nullable: true })
-	password: string;
 	
 	@Field(type => String, { nullable: true })
 	avatar: string;

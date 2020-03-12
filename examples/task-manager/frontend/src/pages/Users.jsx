@@ -14,7 +14,7 @@ const enums = {
     
 };
 
-export default function Users() {
+export default function users_AND_CAPITALIZED() {
     return (
         <div>
             <Table

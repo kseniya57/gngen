@@ -57,11 +57,11 @@ export const pubSub = new RedisPubSub({
 async function bootstrap() {
     await TypeORM.createConnection({
         database: 'testdb',
-        type: 'mysql',
-        username: 'root',
-        password: '12345678',
-        port: 3306,
-        host: 'localhost',
+		type: 'mysql',
+		username: 'root',
+		password: '12345678',
+		port: 3306,
+		host: 'localhost',
         entities,
         synchronize: true,
         logger: 'advanced-console',

@@ -58,12 +58,12 @@ export class TaskResolver {
     @Mutation(returns => Int, { description: 'Add a task' })
     async addTask(
         @Arg('input', type => TaskInput) input: TaskInput,
-        @PubSub(Topic.taskAdded) notifyAboutAddedTask: Publisher<Task>
+        @PubSub(Topic.taskAdded) onTaskAdded: Publisher<Task>
     ): Promise<number> {
         const task = this.taskRepository.create(filterFields<TaskInput>(input));
         await this.setRelations(task, input);
         await this.taskRepository.save(task);
-        notifyAboutAddedTask(task);
+        onTaskAdded(task);
         return task.id;
     }
 
@@ -80,7 +80,7 @@ export class TaskResolver {
     async updateTask(
         @Arg('id', type => Int) id: number,
         @Arg('input', type => TaskInput) input: TaskInput,
-        @PubSub(Topic.taskUpdated) notifyAboutUpdatedTask: Publisher<Task>
+        @PubSub(Topic.taskUpdated) onTaskUpdated: Publisher<Task>
     ): Promise<boolean> {
         const task = await this.taskRepository.findOne(id);
         if (!task) {
@@ -89,7 +89,7 @@ export class TaskResolver {
         Object.assign(task, filterFields(input));
         await this.setRelations(task, input);
         await this.taskRepository.save(task);
-        notifyAboutUpdatedTask(task);
+        onTaskUpdated(task);
         return true;
     }
 
@@ -105,11 +105,11 @@ export class TaskResolver {
     @Mutation(returns => Boolean, { description: 'Delete task' })
     async deleteTask(
         @Arg('id', type => Int) id: number,
-        @PubSub(Topic.taskDeleted) notifyAboutDeletedTask: Publisher<number>
+        @PubSub(Topic.taskDeleted) onTaskDeleted: Publisher<number>
     ): Promise<boolean> {
         const affectedRows = (await this.taskRepository.delete(id)).affected || 0;
         if (affectedRows  > 0) {
-            notifyAboutDeletedTask(id).catch(console.error);
+            onTaskDeleted(id).catch(console.error);
         }
         return affectedRows > 0;
     }

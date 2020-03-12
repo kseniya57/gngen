@@ -11,7 +11,7 @@ const enums = {
     
 };
 
-export default function Category() {
+export default function categories_AND_CAPITALIZED() {
     return (
         <div>
             <Table

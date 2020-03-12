@@ -51,12 +51,12 @@ export class $NAME_CAPITALIZEDResolver {
     @Mutation(returns => Int, { description: 'Add a $NAME' })
     async add$NAME_CAPITALIZED(
         @Arg('input', type => $NAME_CAPITALIZEDInput) input: $NAME_CAPITALIZEDInput,
-        @PubSub(Topic.$NAMEAdded) onAdded$NAME_CAPITALIZED: Publisher<$NAME_CAPITALIZED>
+        @PubSub(Topic.$NAMEAdded) on$NAME_CAPITALIZEDAdded: Publisher<$NAME_CAPITALIZED>
     ): Promise<number> {
         const $NAME = this.$NAMERepository.create(filterFields<$NAME_CAPITALIZEDInput>(input));
         /* set relations call */
         await this.$NAMERepository.save($NAME);
-        onAdded$NAME_CAPITALIZED($NAME);
+        on$NAME_CAPITALIZEDAdded($NAME);
         return $NAME.id;
     }
 
@@ -74,7 +74,7 @@ export class $NAME_CAPITALIZEDResolver {
     async update$NAME_CAPITALIZED(
         @Arg('id', type => Int) id: number,
         @Arg('input', type => $NAME_CAPITALIZEDInput) input: $NAME_CAPITALIZEDInput,
-        @PubSub(Topic.$NAMEUpdated) onUpdated$NAME_CAPITALIZED: Publisher<$NAME_CAPITALIZED>
+        @PubSub(Topic.$NAMEUpdated) on$NAME_CAPITALIZEDUpdated: Publisher<$NAME_CAPITALIZED>
     ): Promise<boolean> {
         const $NAME = await this.$NAMERepository.findOne(id);
         if (!$NAME) {
@@ -83,7 +83,7 @@ export class $NAME_CAPITALIZEDResolver {
         Object.assign($NAME, filterFields(input));
         /* set relations call */
         await this.$NAMERepository.save($NAME);
-        onUpdated$NAME_CAPITALIZED($NAME);
+        on$NAME_CAPITALIZEDUpdated($NAME);
         return true;
     }
 
@@ -100,11 +100,11 @@ export class $NAME_CAPITALIZEDResolver {
     @Mutation(returns => Boolean, { description: 'Delete $NAME' })
     async delete$NAME_CAPITALIZED(
         @Arg('id', type => Int) id: number,
-        @PubSub(Topic.$NAMEDeleted) onDeleted$NAME_CAPITALIZED: Publisher<number>
+        @PubSub(Topic.$NAMEDeleted) on$NAME_CAPITALIZEDDeleted: Publisher<number>
     ): Promise<boolean> {
         const affectedRows = (await this.$NAMERepository.delete(id)).affected || 0;
         if (affectedRows  > 0) {
-            onDeleted$NAME_CAPITALIZED(id).catch(console.error);
+            on$NAME_CAPITALIZEDDeleted(id).catch(console.error);
         }
         return affectedRows > 0;
     }

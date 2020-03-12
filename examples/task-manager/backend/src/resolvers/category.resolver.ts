@@ -51,12 +51,12 @@ export class CategoryResolver {
     @Mutation(returns => Int, { description: 'Add a category' })
     async addCategory(
         @Arg('input', type => CategoryInput) input: CategoryInput,
-        @PubSub(Topic.categoryAdded) notifyAboutAddedCategory: Publisher<Category>
+        @PubSub(Topic.categoryAdded) onCategoryAdded: Publisher<Category>
     ): Promise<number> {
         const category = this.categoryRepository.create(filterFields<CategoryInput>(input));
         await this.setRelations(category, input);
         await this.categoryRepository.save(category);
-        notifyAboutAddedCategory(category);
+        onCategoryAdded(category);
         return category.id;
     }
 
@@ -73,7 +73,7 @@ export class CategoryResolver {
     async updateCategory(
         @Arg('id', type => Int) id: number,
         @Arg('input', type => CategoryInput) input: CategoryInput,
-        @PubSub(Topic.categoryUpdated) notifyAboutUpdatedCategory: Publisher<Category>
+        @PubSub(Topic.categoryUpdated) onCategoryUpdated: Publisher<Category>
     ): Promise<boolean> {
         const category = await this.categoryRepository.findOne(id);
         if (!category) {
@@ -82,7 +82,7 @@ export class CategoryResolver {
         Object.assign(category, filterFields(input));
         await this.setRelations(category, input);
         await this.categoryRepository.save(category);
-        notifyAboutUpdatedCategory(category);
+        onCategoryUpdated(category);
         return true;
     }
 
@@ -98,11 +98,11 @@ export class CategoryResolver {
     @Mutation(returns => Boolean, { description: 'Delete category' })
     async deleteCategory(
         @Arg('id', type => Int) id: number,
-        @PubSub(Topic.categoryDeleted) notifyAboutDeletedCategory: Publisher<number>
+        @PubSub(Topic.categoryDeleted) onCategoryDeleted: Publisher<number>
     ): Promise<boolean> {
         const affectedRows = (await this.categoryRepository.delete(id)).affected || 0;
         if (affectedRows  > 0) {
-            notifyAboutDeletedCategory(id).catch(console.error);
+            onCategoryDeleted(id).catch(console.error);
         }
         return affectedRows > 0;
     }

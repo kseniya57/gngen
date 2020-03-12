@@ -22,8 +22,8 @@ const App = () => (
               <Router history={browserHistory}>
                 <Route path="/" component={Wrapper}>
                     <Route path="users" component={Users} />
-                    <Route path="tasks" component={Tasks} />
-                    <Route path="categories" component={Categories} />
+					<Route path="tasks" component={Tasks} />
+					<Route path="categories" component={Categories} />
                 </Route>
               </Router>
         </ThemeProvider>

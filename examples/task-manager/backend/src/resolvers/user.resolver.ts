@@ -51,12 +51,12 @@ export class UserResolver {
     @Mutation(returns => Int, { description: 'Add a user' })
     async addUser(
         @Arg('input', type => UserInput) input: UserInput,
-        @PubSub(Topic.userAdded) notifyAboutAddedUser: Publisher<User>
+        @PubSub(Topic.userAdded) onUserAdded: Publisher<User>
     ): Promise<number> {
         const user = this.userRepository.create(filterFields<UserInput>(input));
         await this.setRelations(user, input);
         await this.userRepository.save(user);
-        notifyAboutAddedUser(user);
+        onUserAdded(user);
         return user.id;
     }
 
@@ -73,7 +73,7 @@ export class UserResolver {
     async updateUser(
         @Arg('id', type => Int) id: number,
         @Arg('input', type => UserInput) input: UserInput,
-        @PubSub(Topic.userUpdated) notifyAboutUpdatedUser: Publisher<User>
+        @PubSub(Topic.userUpdated) onUserUpdated: Publisher<User>
     ): Promise<boolean> {
         const user = await this.userRepository.findOne(id);
         if (!user) {
@@ -82,7 +82,7 @@ export class UserResolver {
         Object.assign(user, filterFields(input));
         await this.setRelations(user, input);
         await this.userRepository.save(user);
-        notifyAboutUpdatedUser(user);
+        onUserUpdated(user);
         return true;
     }
 
@@ -98,11 +98,11 @@ export class UserResolver {
     @Mutation(returns => Boolean, { description: 'Delete user' })
     async deleteUser(
         @Arg('id', type => Int) id: number,
-        @PubSub(Topic.userDeleted) notifyAboutDeletedUser: Publisher<number>
+        @PubSub(Topic.userDeleted) onUserDeleted: Publisher<number>
     ): Promise<boolean> {
         const affectedRows = (await this.userRepository.delete(id)).affected || 0;
         if (affectedRows  > 0) {
-            notifyAboutDeletedUser(id).catch(console.error);
+            onUserDeleted(id).catch(console.error);
         }
         return affectedRows > 0;
     }

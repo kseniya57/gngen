@@ -14,7 +14,7 @@ const enums = {
     
 };
 
-export default function Task() {
+export default function tasks_AND_CAPITALIZED() {
     return (
         <div>
             <Table

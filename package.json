@@ -1,6 +1,6 @@
 {
   "name": "gngen",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "projects generator",
   "main": "src/index.js",
   "type": "module",

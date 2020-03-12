@@ -11,12 +11,8 @@
         {
           "name": "email",
           "type": "string",
+          "length": 64,
           "required": true
-        },
-        {
-          "name": "password",
-          "type": "string",
-          "hidden": true
         },
         {
           "name": "avatar",
