@@ -12,7 +12,7 @@ export default class ProgramManager {
       exit('Command name required');
     }
 
-    [this.command, this.name] = [...argv];
+    [this.command, this.appName] = [...argv];
     /* parse options */
     this.options = {};
     let i = 0;
@@ -31,8 +31,9 @@ export default class ProgramManager {
   }
 
   async run() {
-    if (Object.keys(commands).includes(this.command)) {
-      await commands[this.command](this.name, this.options);
+    const Command = commands[this.command];
+    if (Command) {
+      await new Command(this.appName, this.options).run();
     }
   }
 }
