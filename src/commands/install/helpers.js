@@ -18,6 +18,9 @@ export const createField = (enums) => (field, withTypeORMNotation = true) => {
         if (!TYPES_WITHOUT_LENGTH.includes(field.type)) {
             options.length = field.length || SQL_LENGTH_MAPPING[field.type]
         }
+        if (!options.length) {
+            delete options.length;
+        }
     }
 
     const lines = [

@@ -84,22 +84,22 @@ export default class InstallCommand {
 
         await fs.writeFile(
             `${sourceDirectory}/entities/index.ts`,
-            `${entities.map(entity => `import {${entity.capitalizedName}} from './${entity.name}';`).join('\n')}\n{2}export default [\n\t${entities.map(entity => entity.capitalizedName).join(',\n\t')}\n];\n{2}export {\n\t${entities.map(entity => entity.capitalizedName).join(',\n\t')}\n};`
+            `${entities.map(entity => `import {${entity.capitalizedName}} from './${entity.name}';`).join('\n')}\n\nexport default [\n\t${entities.map(entity => entity.capitalizedName).join(',\n\t')}\n];\n\nexport {\n\t${entities.map(entity => entity.capitalizedName).join(',\n\t')}\n};`
         );
         await fs.writeFile(
             `${sourceDirectory}/resolvers/index.ts`,
-            `${withAuth ? 'import {AuthResolver} from \'./auth.resolver\';\n' : ''}${entities.map(entity => `import {${entity.capitalizedName}Resolver} from './${entity.name}.resolver';`).join('\n')}\n{2}export default [${withAuth ? '\n\tAuthResolver,' : ''}\n\t${entities.map(entity => `${entity.capitalizedName}Resolver`).join(',\n\t')}\n];`
+            `${withAuth ? 'import {AuthResolver} from \'./auth.resolver\';\n' : ''}${entities.map(entity => `import {${entity.capitalizedName}Resolver} from './${entity.name}.resolver';`).join('\n')}\n\nexport default [${withAuth ? '\n\tAuthResolver,' : ''}\n\t${entities.map(entity => `${entity.capitalizedName}Resolver`).join(',\n\t')}\n];`
         );
 
         await FileManager.updateFile('./backend/src/index.ts', text => {
             let updatedText = text
-                .replace('/* db */', _.entries(dbConfig).map(([key, value]) => `${key}: ${_.isString(value) ? `'${value}'` : value}`).join(',\n\t{2}') + ',');
+                .replace('/* db */', _.entries(dbConfig).map(([key, value]) => `${key}: ${_.isString(value) ? `'${value}'` : value}`).join(',\n\t\t') + ',');
 
             if (withAuth) {
                 updatedText = updatedText
                     .replace(/('\.\/controllers';\n)/, `$1import createContext from './utils/createContext';\nimport { authChecker } from './guards/auth.guard';\n`)
-                    .replace(/(resolvers,)/, `$1\n\t{2}authChecker,`)
-                    .replace(/(schema,)/, `$1\n\t{2}context: createContext,`)
+                    .replace(/(resolvers,)/, `$1\n\t\tauthChecker,`)
+                    .replace(/(schema,)/, `$1\n\t\tcontext: createContext,`)
             }
 
             return updatedText;
@@ -128,13 +128,13 @@ export default class InstallCommand {
                 .replace('/* import relations */', `import { ${relations.map(relation => _.upperFirst(relation.entity)).join(', ')} } from '../entities';`)
                 .replace(
                     '/* relations repositories */',
-                    relations.map(relation => `@InjectRepository(${_.upperFirst(relation.entity)}) private readonly ${relation.entity}Repository: Repository<${_.upperFirst(relation.entity)}>`).join(',\n\t{2}')
+                    relations.map(relation => `@InjectRepository(${_.upperFirst(relation.entity)}) private readonly ${relation.entity}Repository: Repository<${_.upperFirst(relation.entity)}>`).join(',\n\t\t')
                 )
-                .replace('/* set relations */', applyNameReplacers(SET_RELATIONS_TEMPLATE).replace('$BODY', relations.map(makeRelationSetterForEntity).join('\n\t{2}')))
+                .replace('/* set relations */', applyNameReplacers(SET_RELATIONS_TEMPLATE).replace('$BODY', relations.map(makeRelationSetterForEntity).join('\n\t\t')))
                 .replace(/\/\* set relations call \*\//g, `await this.setRelations(${name}, input);`);
 
             if (!withAuth) {
-                resolverCode = resolverCode.replace(/\s{4}@?Authorized.*?\n/g, '')
+                resolverCode = resolverCode.replace(/\s\s\s\s@?Authorized.*?\n/g, '')
             }
 
             try {
@@ -216,7 +216,7 @@ export default class InstallCommand {
             )
             .replace(
                 '/* routes */',
-                entities.map(entity => `<Route path="${entity.pluralizedName}" component={${entity.pluralizedAndCapitalizedName}} />`).join('\n\t{5}')
+                entities.map(entity => `<Route path="${entity.pluralizedName}" component={${entity.pluralizedAndCapitalizedName}} />`).join('\n\t\t\t\t\t')
             )
         );
 
@@ -235,7 +235,7 @@ export default class InstallCommand {
 
         await fs.writeFile(
             `${sourceDirectory}/pages/index.js`,
-            `${entities.map(entity => `import ${entity.pluralizedAndCapitalizedName} from './${entity.pluralizedAndCapitalizedName}';`).join('\n')}\n{2}export {\n\t${_.map(entities, 'pluralizedAndCapitalizedName').join(',\n\t')}\n}`
+            `${entities.map(entity => `import ${entity.pluralizedAndCapitalizedName} from './${entity.pluralizedAndCapitalizedName}';`).join('\n')}\n\nexport {\n\t${_.map(entities, 'pluralizedAndCapitalizedName').join(',\n\t')}\n}`
         );
 
         await safeAwait(Promise.all(entities.map(async (entity) => {
@@ -253,9 +253,9 @@ export default class InstallCommand {
             const queries = applyNameReplacers(QUERIES_TEMPLATE)
                 .replace(
                     '$FIELDS',
-                    `id\n\t${_.map(visibleFields, 'name').join('\n\t')}\n\t${_.map(relations, relation => `${relation.type.endsWith('One') ? relation.entity : pluralize(relation.entity)} {\n\t{2}id\n\t{2}name\n\t}`).join('\n\t')}`
+                    `id\n\t${_.map(visibleFields, 'name').join('\n\t')}\n\t${_.map(relations, relation => `${relation.type.endsWith('One') ? relation.entity : pluralize(relation.entity)} {\n\t\tid\n\t\tname\n\t}`).join('\n\t')}`
                 )
-                .replace('/* dictionaries */', relations.length ? applyNameReplacers(DICTIONARIES_QUERY_TEMPLATE).replace('$DICTIONARIES', _.map(relations, relation => `${pluralize(relation.entity)} {\n\t{3}id\n\t{3}name\n\t{2}}`).join('\n\t{2}')) : '');
+                .replace('/* dictionaries */', relations.length ? applyNameReplacers(DICTIONARIES_QUERY_TEMPLATE).replace('$DICTIONARIES', _.map(relations, relation => `${pluralize(relation.entity)} {\n\t\t\tid\n\t\t\tname\n\t\t}`).join('\n\t\t')) : '');
 
             await safeAwait(fs.writeFile(`${sourceDirectory}/graphql/${pluralizedName}.js`, queries));
 
@@ -276,7 +276,7 @@ export default class InstallCommand {
                 )
                 .replace(
                     '/* enums */',
-                    enumsForEntity.length ? enumsForEntity.map((key) => `${key}: [\n\t{2}${_.values(enums[key]).map(item => _.isString(item) ? `'${item}'` : item).join(',\n\t{2}')}\n\t]`).join(',\n\t') : ''
+                    enumsForEntity.length ? enumsForEntity.map((key) => `${key}: [\n\t\t${_.values(enums[key]).map(item => _.isString(item) ? `'${item}'` : item).join(',\n\t\t')}\n\t]`).join(',\n\t') : ''
                 );
             await fs.writeFile(`${sourceDirectory}/pages/${pluralizedAndCapitalizedName}.jsx`, pageCode);
         })));
